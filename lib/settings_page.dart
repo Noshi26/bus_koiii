@@ -62,7 +62,7 @@ class MenuScreen extends StatelessWidget {
               const SizedBox(height: 20),
               const CircleAvatar(
                 radius: 40,
-                backgroundImage: AssetImage('assets/images/logo.png'), // Replace with your avatar image
+                backgroundImage: AssetImage('assets/images/pp.png'), // Replace with your avatar image
               ),
               const SizedBox(height: 20),
               _menuSection(
