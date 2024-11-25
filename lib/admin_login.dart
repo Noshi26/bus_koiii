@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'navigation_ber.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -13,123 +15,110 @@ class MyApp extends StatelessWidget {
 }
 
 class AdminLoginPage extends StatelessWidget {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.greenAccent,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Logo section
-              Padding(
-                padding: const EdgeInsets.all(20.0),
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Image.asset(
+            "assets/images/background.png",
+            fit: BoxFit.cover,
+          ),
+          Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
-                  children: [
-                    Image.asset(
-                      'assets/bus_logo.png', // Replace with your logo path
-                      height: 150,
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'BUS KOI?',
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    // Logo
+                    Image.asset('assets/images/logo.png', height: 250),
+                    SizedBox(height: 30),
+                    // Box for the login form
+                    Container(
+                      width: 350,
+                      padding: EdgeInsets.all(18.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 10,
+                            offset: Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'International Islamic University Chittagong',
+                            style: TextStyle(
+                              fontSize: 18, // Adjust the font size as needed
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 20),
+                          TextField(
+                            controller: emailController,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Username/ID No',
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          TextField(
+                            controller: passwordController,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Password',
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          ElevatedButton(
+                            onPressed: () {
+                              _signIn(emailController.text, passwordController.text, context);
+                            },
+                            child: Text('Login'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-
-              // Login form section
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'International Islamic University\nChittagong',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        // Username field
-                        TextField(
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            labelText: 'Username/ID No',
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        // Password field
-                        TextField(
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            labelText: 'Password',
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        // Login button
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: const Text(
-                              'Login',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        // Forgot password link
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            'Forget Password',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
+  }
+
+  void _signIn(String email, String password, BuildContext context) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => NavigationMenu()),
+      );
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login failed. Please try again.'),
+        ),
+      );
+    }
   }
 }
